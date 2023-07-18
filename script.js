@@ -11,15 +11,13 @@ class NavMenu {
     lightMode.classList.toggle("hidden");
     darkMode.classList.toggle("hidden");
 
-    if (darkMode.classList.contains("hidden")) {
-      document.querySelector("body").classList.add("light-mode");
-      menuTitle.textContent = "Light Mode";
-      localStorage.setItem("modePreference", "light-mode");
-    } else {
-      document.querySelector("body").classList.remove("light-mode");
-      menuTitle.textContent = "Dark Mode";
-      localStorage.setItem("modePreference", "dark-mode");
-    }
+    const isDarkMode = darkMode.classList.contains("hidden");
+    document.querySelector("body").classList.toggle("light-mode", isDarkMode);
+    menuTitle.textContent = isDarkMode ? "Light Mode" : "Dark Mode";
+    localStorage.setItem(
+      "modePreference",
+      isDarkMode ? "light-mode" : "dark-mode"
+    );
   }
 }
 
@@ -46,6 +44,7 @@ class MainMenu {
         this.#originalData = data;
         this.#newData = this.#originalData;
         this._renderCountry(this.#newData);
+        console.log(this.#newData);
       })
       .catch((error) => console.log(error));
   }
@@ -61,8 +60,10 @@ class MainMenu {
   }
 
   _countrySelect(e) {
+    e.preventDefault();
     const el = e.target.closest(".country-box");
     if (!el) return;
+
     const indexes = +el.dataset.index;
     const selectedCountry = this.#newData[indexes];
     this._renderSelectedCountry(selectedCountry, indexes);
@@ -84,19 +85,11 @@ class MainMenu {
     if (regionVal === "filterRegion") {
       this._renderCountry(this.#originalData);
     }
-    switch (regionVal) {
-      case "Asia":
-      case "Africa":
-      case "Americas":
-      case "Europe":
-      case "Oceania":
-        const filterRegion = this.#originalData.filter(
-          (data) => data.region === regionVal
-        );
-        this.#newData = filterRegion;
-        this._renderCountry(this.#newData);
-        break;
-    }
+    const filterRegion = this.#originalData.filter(
+      (data) => data.region === regionVal
+    );
+    this.#newData = filterRegion;
+    this._renderCountry(this.#newData);
   }
 
   _renderCountry(data) {
@@ -106,7 +99,7 @@ class MainMenu {
       const { png } = el.flags;
 
       const html = `
-      <article class="country-box box flex flex-col" data-index = '${i}' id = ${i}>
+      <article class="country-box box flex flex-col" data-index = '${i}'>
         <div class="img-flag">
         <img src="${png}" alt="" />
         </div>
@@ -114,7 +107,7 @@ class MainMenu {
         <h2 class="country-name">${el.name}</h2>
         <p class="population">Population:${el.population.toLocaleString()}</p>
         <p class="region">Region:${el.region}</p>
-        <p class="capital">Capital:${el.capital}</p>
+        <p class="capital">Capital:${el.capital ?? "No Capital"}</p>
         </div>
       </article> 
       `;
@@ -141,9 +134,7 @@ class MainMenu {
         : "No border Countries";
     const html = `
       <button class = 'btn-back'>
-      <a href = '#${i}'>
-      Go back
-      </a></button>
+      Go back</button>
       <div class = 'flex flex-col'>
         <div class = 'img-selected'>
         <img src ='${png}' alt= ''>
@@ -161,13 +152,15 @@ class MainMenu {
           </span></p>
           <p> Sub Region:<span> ${data.subregion}
           </span></p>
-          <p> Capital: <span>${data.capital}
+          <p> Capital: <span>${data.capital ?? "No Capital"}
           </span></p>
           </div>
           <div>
           <p>Top Level Domain:<span> ${domain}
           </span></p>
-          <p>Currencies: <span>${data.currencies[0].name}
+          <p>Currencies: <span> ${
+            data.currencies ? data.currencies[0].name : "No currency"
+          }
           </span></p>
           <p>Languages:<span> ${language}
           </span></p>
@@ -177,7 +170,7 @@ class MainMenu {
         <span>
         Border Countries: 
         </span>
-          <span class ='flex'>${borderCountryName}</span>
+          <span class ='flex'> ${borderCountryName}</span>
          </p>
         </div>
   
@@ -204,18 +197,11 @@ class MainMenu {
   }
   _applyModePreference() {
     const modePreference = localStorage.getItem("modePreference");
-
-    if (modePreference === "light-mode") {
-      document.querySelector("body").classList.add("light-mode");
-      lightMode.classList.remove("hidden");
-      darkMode.classList.add("hidden");
-      menuTitle.textContent = "Light Mode";
-    } else {
-      document.querySelector("body").classList.remove("light-mode");
-      lightMode.classList.add("hidden");
-      darkMode.classList.remove("hidden");
-      menuTitle.textContent = "Dark Mode";
-    }
+    const isDarkMode = modePreference === "dark-mode";
+    document.querySelector("body").classList.toggle("light-mode", !isDarkMode);
+    lightMode.classList.toggle("hidden", isDarkMode);
+    darkMode.classList.toggle("hidden", !isDarkMode);
+    menuTitle.textContent = isDarkMode ? "Dark Mode" : "Light Mode";
   }
 }
 
