@@ -144,7 +144,7 @@ nav {
 /* main container */
 /* input section */
 main {
-  padding-top: 10rem;
+  padding-top: 12rem;
 }
 .input-section {
   align-items: stretch;
@@ -203,13 +203,6 @@ main {
 }
 /* Selected country */
 .selected-country {
-  position: absolute;
-  top: 85%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding-bottom: 4rem;
-  width: clamp(30rem, 90%, 130rem);
-  padding-bottom: 4rem;
   min-height: 100vh;
   z-index: 1;
   display: none;
