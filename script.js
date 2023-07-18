@@ -12,11 +12,11 @@ class NavMenu {
     darkMode.classList.toggle("hidden");
 
     const isDarkMode = darkMode.classList.contains("hidden");
-    document.querySelector("body").classList.toggle("light-mode", isDarkMode);
-    menuTitle.textContent = isDarkMode ? "Light Mode" : "Dark Mode";
+    document.querySelector("body").classList.toggle("light-mode", !isDarkMode);
+    menuTitle.textContent = !isDarkMode ? "Dark Mode" : "Light Mode";
     localStorage.setItem(
       "modePreference",
-      isDarkMode ? "light-mode" : "dark-mode"
+      !isDarkMode ? "light-mode" : "dark-mode"
     );
   }
 }
@@ -44,7 +44,6 @@ class MainMenu {
         this.#originalData = data;
         this.#newData = this.#originalData;
         this._renderCountry(this.#newData);
-        console.log(this.#newData);
       })
       .catch((error) => console.log(error));
   }
@@ -131,7 +130,7 @@ class MainMenu {
         ? filterBorder
             .map((border) => `<button> ${border.name} </button>`)
             .join("")
-        : "No border Countries";
+        : " No border Countries";
     const html = `
       <button class = 'btn-back'>
       Go back</button>
@@ -199,9 +198,9 @@ class MainMenu {
     const modePreference = localStorage.getItem("modePreference");
     const isDarkMode = modePreference === "dark-mode";
     document.querySelector("body").classList.toggle("light-mode", !isDarkMode);
-    lightMode.classList.toggle("hidden", isDarkMode);
-    darkMode.classList.toggle("hidden", !isDarkMode);
-    menuTitle.textContent = isDarkMode ? "Dark Mode" : "Light Mode";
+    lightMode.classList.toggle("hidden", !isDarkMode);
+    darkMode.classList.toggle("hidden", isDarkMode);
+    menuTitle.textContent = !isDarkMode ? "Dark Mode" : "Light Mode";
   }
 }
 
