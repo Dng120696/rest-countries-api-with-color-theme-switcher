@@ -54,11 +54,9 @@ class MainMenu {
     const el = e.target.closest("button");
     if (!el) return;
 
-    console.log(el.textContent);
-    const findSelectedCountry = this.#newData.find((data) => {
-      console.log(data.name === el.textContent);
-      return data.name === el.textContent.trim();
-    });
+    const findSelectedCountry = this.#originalData.find(
+      (data) => data.name.toLowerCase() === el.textContent.trim().toLowerCase()
+    );
     this._renderSelectedCountry(findSelectedCountry);
   }
 
