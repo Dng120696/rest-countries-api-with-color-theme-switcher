@@ -69,25 +69,34 @@ class MainMenu {
   }
 
   _countryFilter(e) {
-    const inputval = e.target.value.toLowerCase();
-    if (!inputval) {
-      this._renderCountry(this.#originalData);
-    }
-    const filterCountry = this.#originalData.filter((data) =>
-      data.name.toLowerCase().includes(inputval)
-    );
-    this.#newData = filterCountry;
+    const inputVal = e.target.value.toLowerCase();
+    const regionVal = region.value;
+
+    !inputVal
+      ? (this.#newData = this.#originalData.filter(
+          (data) =>
+            data.region === regionVal ||
+            regionVal === "All" ||
+            regionVal === "filterRegion"
+        ))
+      : (this.#newData = this.#originalData.filter(
+          (data) =>
+            data.name.toLowerCase().includes(inputVal) &&
+            (data.region === regionVal ||
+              regionVal === "All" ||
+              regionVal === "filterRegion")
+        ));
+
     this._renderCountry(this.#newData);
   }
   _regionFilter() {
     const regionVal = region.value;
-    if (regionVal === "filterRegion") {
-      this._renderCountry(this.#originalData);
-    }
-    const filterRegion = this.#originalData.filter(
-      (data) => data.region === regionVal
-    );
-    this.#newData = filterRegion;
+    regionVal === "All" || regionVal === "filterRegion"
+      ? (this.#newData = this.#originalData)
+      : (this.#newData = this.#originalData.filter(
+          (data) => data.region === regionVal
+        ));
+
     this._renderCountry(this.#newData);
   }
 
