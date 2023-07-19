@@ -112,20 +112,48 @@ class MainMenu {
         <img src="${png}" alt="" />
         </div>
         <div class="country-info">
-        <h2 class="country-name">${el.name}</h2>
-        <p class="population">Population:${el.population.toLocaleString()}</p>
-        <p class="region">Region:${el.region}</p>
-        <p class="capital">Capital:${el.capital ?? "No Capital"}</p>
+        <h2 class="country-name"> ${el.name}</h2>
+        <p class="population">
+        <span> 
+        Population:
+        </span>
+         ${el.population.toLocaleString()}</p>
+        <p class="region">
+        <span> 
+        Region:
+        </span>
+         ${el.region}</p>
+        <p class="capital">
+        <span> 
+        Capital:
+        </span>
+         ${el.capital ?? "No Capital"}</p>
         </div>
       </article> 
       `;
       countrydata.insertAdjacentHTML("beforeend", html);
+      const countryObserver = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            const { target, isIntersecting } = entry;
+            target.classList.toggle("show", isIntersecting);
+            if (isIntersecting) {
+              observer.unobserve(target);
+            }
+          });
+        },
+        { root: null, threshold: 0.5 }
+      );
+
+      document.querySelectorAll(".country-box").forEach((box) => {
+        countryObserver.observe(box);
+      });
     });
   }
 
   _renderSelectedCountry(data, i) {
     selectedCountry.innerHTML = "";
-    const { png } = data.flags;
+    const { svg } = data.flags;
     const [domain] = data.topLevelDomain;
     const language = data.languages.map((data) => data.name).join(", ");
 
@@ -145,22 +173,23 @@ class MainMenu {
       Go back</button>
       <div class = 'flex flex-col'>
         <div class = 'img-selected'>
-        <img src ='${png}' alt= ''>
+        <img src ='${svg}' alt= ''>
         </div>
         <div class = 'selected-info'>
         <h1> ${data.name}
         </h1>
+        <div class = 'flex flex-col country-all-info'>
         <div class = 'flex flex-col'>
           <div>
-          <p> Native Name: <span>${data.nativeName}
+          <p> Native Name: <span> ${data.nativeName}
           </span></p>
-          <p> Population: <span>${data.population.toLocaleString()}
+          <p> Population: <span> ${data.population.toLocaleString()}
           </span></p>
-          <p> Region: <span>${data.region}
+          <p> Region: <span> ${data.region}
           </span></p>
           <p> Sub Region:<span> ${data.subregion}
           </span></p>
-          <p> Capital: <span>${data.capital ?? "No Capital"}
+          <p> Capital: <span> ${data.capital ?? "No Capital"}
           </span></p>
           </div>
           <div>
@@ -174,12 +203,13 @@ class MainMenu {
           </span></p>
           </div>
         </div>
-        <p class = 'btn-border flex flex-col'>
+        <p class = 'btn-border'>
         <span>
         Border Countries: 
         </span>
-          <span class ='flex'> ${borderCountryName}</span>
+          <span > ${borderCountryName}</span>
          </p>
+         </div>
         </div>
   
       </div>
