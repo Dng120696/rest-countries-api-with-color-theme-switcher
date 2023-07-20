@@ -37,15 +37,16 @@ class MainMenu {
     countrydata.addEventListener("click", this._countrySelect.bind(this));
   }
 
-  _fetchData() {
-    fetch("./data.json")
-      .then((res) => res.json())
-      .then((data) => {
-        this.#originalData = data;
-        this.#newData = this.#originalData;
-        this._renderCountry(this.#newData);
-      })
-      .catch((error) => console.log(error));
+  async _fetchData() {
+    try {
+      const res = await fetch("./data.json");
+      const data = await res.json();
+      this.#originalData = data;
+      this.#newData = this.#originalData;
+      this._renderCountry(this.#newData);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   _selectBorder(e) {
