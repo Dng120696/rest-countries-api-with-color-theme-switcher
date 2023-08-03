@@ -174,6 +174,7 @@ class MainMenu {
     const findSelectedCountry = this.originalData.find(
       (data) => data.name.toLowerCase() === el.textContent.trim().toLowerCase()
     );
+    this.renderFakeSpinner(0.5);
     this.renderSelectedCountry(findSelectedCountry);
   }
 
