@@ -1,6 +1,6 @@
 import { darkMode, lightMode, menuTitle, NavMenu } from "./nav.js";
 import { viewCountry } from "./controller.js";
-const countrydata = document.querySelector(".country-data");
+export const countrydata = document.querySelector(".country-data");
 const inputSearch = document.getElementById("input-search");
 const inputSection = document.querySelector(".input-section");
 const region = document.getElementById("region");
@@ -27,18 +27,21 @@ class MainMenu {
       console.log(error);
     }
   }
-  async renderFakeSpinner(sec) {
-    this.renderSpinner();
-    await new Promise((resolve) => setTimeout(resolve, sec * 1000));
+  renderFakeSpinner(parent, sec) {
+    return new Promise((resolve) => {
+      this.renderSpinner(parent);
+      setTimeout(resolve, sec * 1000);
+    });
   }
-  renderSpinner() {
+
+  renderSpinner(parent) {
     const html = `
         <div class="spinner">
         <img src="./images/loading.svg" alt="" width="500px" height="500px" />
       </div>`;
-    countrydata.innerHTML = "";
+    parent.innerHTML = "";
 
-    countrydata.insertAdjacentHTML("beforeend", html);
+    parent.insertAdjacentHTML("beforeend", html);
   }
   renderCountry(data) {
     countrydata.innerHTML = "";
@@ -170,11 +173,11 @@ class MainMenu {
   async selectBorder(e) {
     const el = e.target.closest("button");
     if (!el) return;
-
     const findSelectedCountry = this.originalData.find(
       (data) => data.name.toLowerCase() === el.textContent.trim().toLowerCase()
     );
-    await this.renderFakeSpinner(0.5);
+    await this.renderFakeSpinner(selectedCountry, 0.5);
+
     this.renderSelectedCountry(findSelectedCountry);
   }
 
@@ -186,7 +189,7 @@ class MainMenu {
     const indexes = +el.dataset.index;
 
     const selectedCountry = this.#newData[indexes];
-    await this.renderFakeSpinner(0.5);
+    await this.renderFakeSpinner(countrydata, 0.5);
     this.renderSelectedCountry(selectedCountry, indexes);
   }
 
@@ -208,7 +211,7 @@ class MainMenu {
               regionVal === "All" ||
               regionVal === "filterRegion")
         ));
-    await this.renderFakeSpinner(0.5);
+    await this.renderFakeSpinner(countrydata, 0.5);
     this.renderCountry(this.#newData);
   }
   async regionFilter() {
@@ -218,7 +221,7 @@ class MainMenu {
       : (this.#newData = this.originalData.filter(
           (data) => data.region === regionVal
         ));
-    await this.renderFakeSpinner(0.5);
+    await this.renderFakeSpinner(countrydata, 0.5);
     this.renderCountry(this.#newData);
   }
 
