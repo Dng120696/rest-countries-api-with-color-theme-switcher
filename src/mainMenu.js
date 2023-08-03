@@ -167,14 +167,14 @@ class MainMenu {
       .querySelector(".btn-border")
       .addEventListener("click", this.selectBorder.bind(this));
   }
-  selectBorder(e) {
+  async selectBorder(e) {
     const el = e.target.closest("button");
     if (!el) return;
 
     const findSelectedCountry = this.originalData.find(
       (data) => data.name.toLowerCase() === el.textContent.trim().toLowerCase()
     );
-    this.renderFakeSpinner(0.5);
+    await this.renderFakeSpinner(0.5);
     this.renderSelectedCountry(findSelectedCountry);
   }
 
