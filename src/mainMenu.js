@@ -1,5 +1,5 @@
 import { darkMode, lightMode, menuTitle, NavMenu } from "./nav.js";
-
+import { viewCountry } from "./controller.js";
 const countrydata = document.querySelector(".country-data");
 const inputSearch = document.getElementById("input-search");
 const inputSection = document.querySelector(".input-section");
@@ -7,80 +7,40 @@ const region = document.getElementById("region");
 const selectedCountry = document.querySelector(".selected-country");
 class MainMenu {
   #newData;
-  #originalData;
+  originalData;
   constructor() {
-    this._fetchData();
-    this._applyModePreference();
-    region.addEventListener("change", this._regionFilter.bind(this));
-    inputSearch.addEventListener("input", this._countryFilter.bind(this));
-    countrydata.addEventListener("click", this._countrySelect.bind(this));
+    this.applyModePreference();
+    region.addEventListener("change", this.regionFilter.bind(this));
+    inputSearch.addEventListener("input", this.countryFilter.bind(this));
+    countrydata.addEventListener("click", this.countrySelect.bind(this));
   }
 
-  async _fetchData() {
+  async fetchData() {
     try {
       const res = await fetch("./data.json");
       const data = await res.json();
-      this.#originalData = data;
-      this.#newData = this.#originalData;
-      this._renderCountry(this.#newData);
+      this.originalData = data;
+      this.#newData = this.originalData;
+
+      return this.#newData;
     } catch (error) {
       console.log(error);
     }
   }
-
-  _selectBorder(e) {
-    const el = e.target.closest("button");
-    if (!el) return;
-
-    const findSelectedCountry = this.#originalData.find(
-      (data) => data.name.toLowerCase() === el.textContent.trim().toLowerCase()
-    );
-    this._renderSelectedCountry(findSelectedCountry);
+  async renderFakeSpinner(sec) {
+    this.renderSpinner();
+    await new Promise((resolve) => setTimeout(resolve, sec * 1000));
   }
+  renderSpinner() {
+    const html = `
+        <div class="spinner">
+        <img src="./images/loading.svg" alt="" width="500px" height="500px" />
+      </div>`;
+    countrydata.innerHTML = "";
 
-  _countrySelect(e) {
-    e.preventDefault();
-    const el = e.target.closest(".country-box");
-    if (!el) return;
-
-    const indexes = +el.dataset.index;
-    const selectedCountry = this.#newData[indexes];
-    this._renderSelectedCountry(selectedCountry, indexes);
+    countrydata.insertAdjacentHTML("beforeend", html);
   }
-
-  _countryFilter(e) {
-    const inputVal = e.target.value.toLowerCase();
-    const regionVal = region.value;
-
-    !inputVal
-      ? (this.#newData = this.#originalData.filter(
-          (data) =>
-            data.region === regionVal ||
-            regionVal === "All" ||
-            regionVal === "filterRegion"
-        ))
-      : (this.#newData = this.#originalData.filter(
-          (data) =>
-            data.name.toLowerCase().includes(inputVal) &&
-            (data.region === regionVal ||
-              regionVal === "All" ||
-              regionVal === "filterRegion")
-        ));
-
-    this._renderCountry(this.#newData);
-  }
-  _regionFilter() {
-    const regionVal = region.value;
-    regionVal === "All" || regionVal === "filterRegion"
-      ? (this.#newData = this.#originalData)
-      : (this.#newData = this.#originalData.filter(
-          (data) => data.region === regionVal
-        ));
-
-    this._renderCountry(this.#newData);
-  }
-
-  _renderCountry(data) {
+  renderCountry(data) {
     countrydata.innerHTML = "";
 
     data.forEach((el, i) => {
@@ -130,14 +90,13 @@ class MainMenu {
       });
     });
   }
-
-  _renderSelectedCountry(data, i) {
+  renderSelectedCountry(data, i) {
     selectedCountry.innerHTML = "";
     const { svg } = data.flags;
     const [domain] = data.topLevelDomain;
     const language = data.languages.map((data) => data.name).join(", ");
 
-    const filterBorder = this.#originalData.filter((datas) => {
+    const filterBorder = this.originalData.filter((datas) => {
       if (!data.borders) return false;
       return data.borders.includes(datas.alpha3Code);
     });
@@ -206,14 +165,69 @@ class MainMenu {
 
     document
       .querySelector(".btn-border")
-      .addEventListener("click", this._selectBorder.bind(this));
+      .addEventListener("click", this.selectBorder.bind(this));
   }
+  selectBorder(e) {
+    const el = e.target.closest("button");
+    if (!el) return;
+
+    const findSelectedCountry = this.originalData.find(
+      (data) => data.name.toLowerCase() === el.textContent.trim().toLowerCase()
+    );
+    this.renderSelectedCountry(findSelectedCountry);
+  }
+
+  async countrySelect(e) {
+    e.preventDefault();
+    const el = e.target.closest(".country-box");
+    if (!el) return;
+
+    const indexes = +el.dataset.index;
+
+    const selectedCountry = this.#newData[indexes];
+    await this.renderFakeSpinner(0.5);
+    this.renderSelectedCountry(selectedCountry, indexes);
+  }
+
+  async countryFilter(e) {
+    const inputVal = e.target.value.toLowerCase();
+    const regionVal = region.value;
+
+    !inputVal
+      ? (this.#newData = this.originalData.filter(
+          (data) =>
+            data.region === regionVal ||
+            regionVal === "All" ||
+            regionVal === "filterRegion"
+        ))
+      : (this.#newData = this.originalData.filter(
+          (data) =>
+            data.name.toLowerCase().includes(inputVal) &&
+            (data.region === regionVal ||
+              regionVal === "All" ||
+              regionVal === "filterRegion")
+        ));
+    await this.renderFakeSpinner(0.5);
+    this.renderCountry(this.#newData);
+  }
+  async regionFilter() {
+    const regionVal = region.value;
+    regionVal === "All" || regionVal === "filterRegion"
+      ? (this.#newData = this.originalData)
+      : (this.#newData = this.originalData.filter(
+          (data) => data.region === regionVal
+        ));
+    await this.renderFakeSpinner(0.5);
+    this.renderCountry(this.#newData);
+  }
+
   buttonBack() {
     countrydata.classList.remove("hide-country");
     inputSection.classList.remove("hide-country");
     selectedCountry.classList.remove("show-selected");
+    viewCountry();
   }
-  _applyModePreference() {
+  applyModePreference() {
     const modePreference = localStorage.getItem("modePreference");
     const isDarkMode = modePreference === "dark-mode";
     document.querySelector("body").classList.toggle("light-mode", !isDarkMode);
@@ -223,5 +237,5 @@ class MainMenu {
   }
 }
 
-const mainMenu = new MainMenu();
+export default new MainMenu();
 const nav = new NavMenu();

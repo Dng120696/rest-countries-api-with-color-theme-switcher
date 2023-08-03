@@ -173,6 +173,7 @@ main {
 .country-data {
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
   position: relative;
   z-index: 10;
 }
@@ -263,10 +264,33 @@ main {
   flex-wrap: wrap;
   gap: 1rem;
 }
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 30vh;
+}
+.spinner img {
+  width: 5rem;
+  height: 5rem;
+  animation: 2s linear infinite rotate;
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 .show-selected {
   display: block;
 }
+
 .hide-country {
   display: none;
 }
