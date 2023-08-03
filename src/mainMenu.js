@@ -173,56 +173,71 @@ class MainMenu {
   async selectBorder(e) {
     const el = e.target.closest("button");
     if (!el) return;
-    const findSelectedCountry = this.originalData.find(
-      (data) => data.name.toLowerCase() === el.textContent.trim().toLowerCase()
-    );
-    await this.renderFakeSpinner(selectedCountry, 0.5);
+    try {
+      const findSelectedCountry = this.originalData.find(
+        (data) =>
+          data.name.toLowerCase() === el.textContent.trim().toLowerCase()
+      );
+      await this.renderFakeSpinner(selectedCountry, 0.5);
 
-    this.renderSelectedCountry(findSelectedCountry);
+      this.renderSelectedCountry(findSelectedCountry);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async countrySelect(e) {
     e.preventDefault();
     const el = e.target.closest(".country-box");
     if (!el) return;
+    try {
+      const indexes = +el.dataset.index;
 
-    const indexes = +el.dataset.index;
-
-    const selectedCountry = this.#newData[indexes];
-    await this.renderFakeSpinner(countrydata, 0.5);
-    this.renderSelectedCountry(selectedCountry, indexes);
+      const selectedCountry = this.#newData[indexes];
+      await this.renderFakeSpinner(countrydata, 0.5);
+      this.renderSelectedCountry(selectedCountry, indexes);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async countryFilter(e) {
     const inputVal = e.target.value.toLowerCase();
     const regionVal = region.value;
-
-    !inputVal
-      ? (this.#newData = this.originalData.filter(
-          (data) =>
-            data.region === regionVal ||
-            regionVal === "All" ||
-            regionVal === "filterRegion"
-        ))
-      : (this.#newData = this.originalData.filter(
-          (data) =>
-            data.name.toLowerCase().includes(inputVal) &&
-            (data.region === regionVal ||
+    try {
+      !inputVal
+        ? (this.#newData = this.originalData.filter(
+            (data) =>
+              data.region === regionVal ||
               regionVal === "All" ||
-              regionVal === "filterRegion")
-        ));
-    await this.renderFakeSpinner(countrydata, 0.5);
-    this.renderCountry(this.#newData);
+              regionVal === "filterRegion"
+          ))
+        : (this.#newData = this.originalData.filter(
+            (data) =>
+              data.name.toLowerCase().includes(inputVal) &&
+              (data.region === regionVal ||
+                regionVal === "All" ||
+                regionVal === "filterRegion")
+          ));
+      await this.renderFakeSpinner(countrydata, 0.5);
+      this.renderCountry(this.#newData);
+    } catch (error) {
+      console.log(error);
+    }
   }
   async regionFilter() {
     const regionVal = region.value;
-    regionVal === "All" || regionVal === "filterRegion"
-      ? (this.#newData = this.originalData)
-      : (this.#newData = this.originalData.filter(
-          (data) => data.region === regionVal
-        ));
-    await this.renderFakeSpinner(countrydata, 0.5);
-    this.renderCountry(this.#newData);
+    try {
+      regionVal === "All" || regionVal === "filterRegion"
+        ? (this.#newData = this.originalData)
+        : (this.#newData = this.originalData.filter(
+            (data) => data.region === regionVal
+          ));
+      await this.renderFakeSpinner(countrydata, 0.5);
+      this.renderCountry(this.#newData);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   buttonBack() {
